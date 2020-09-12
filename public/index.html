@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+  </head>
+
+  <body>
+    <div id="app">
+      <div class="container">
+        <div class="row" v-if="appInit != true">
+          <button type="button" v-on:click="initData" class="btn btn-primary">
+            start
+          </button>
+          
+        </div>
+
+        <div v-if="appInit == true">
+          <div class="alert alert-light" role="alert">
+            average time for all tasks : {{ estimatedTime }}
+          </div>
+          <div class="d-flex flex-row ustify-content-center">
+            <div class="btn-group" role="group" aria-label="Basic example">
+              <button
+                v-for="item in taskList"
+                v-on:click="changeDeveloper(item)"
+                type="button"
+                class="btn btn-secondary"
+              >
+                {{item.developer.id}}
+              </button>
+            </div>
+          </div>
+          <div class="row">
+            <div
+              class="alert alert-primary"
+              role="alert"
+              v-if="selectedTaskList.developer != null"
+            >
+              developer capacity : {{selectedTaskList.developer.difficulty}}
+            </div>
+          </div>
+          <div class="d-flex flex-row ustify-content-center w-100 p-3">
+            <b>Task List</b>
+          </div>
+          <div class="row">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">id</th>
+                  <th scope="col">name</th>
+                  <th scope="col">difficulty</th>
+                  <th scope="col">time</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(item,index)  in selectedTaskList.tasks" :key="item.id">
+                  <th scope="row">{{index + 1}}</th>
+                  <td>{{item.id}}</td>
+                  <td>{{item.name}}</td>
+                  <td>{{item.difficulty}}</td>
+                  <td>{{item.time}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    var app = new Vue({
+      el: "#app",
+      data: {
+        message: "Hello Vueeee!",
+        appInit: false,
+        calculationDone: false,
+        estimatedTime: "",
+        taskList: [],
+        selectedTaskList: [],
+      },
+      methods: {
+        initData: function (event) {
+          axios.get("/rest/data/init").then((response) => {
+            console.log(response);
+            if (response.data.result == "ok") {
+              this.appInit = true;
+              this.fetchAssignments();
+              this.getEstimatedTime();
+            }
+          });
+        },
+        assignAllTasks: function () {
+          axios.get("/rest/assignments/calculate").then((response) => {
+            if (response.data.result == "ok") {
+              this.calculationDone = true;
+              this.fetchAssignments();
+            }
+          });
+        },
+        fetchAssignments: function () {
+          axios.get("/rest/assignments").then((response) => {
+            console.log(response.data);
+            this.taskList = response.data;
+            this.selectedTaskList = this.taskList[0];
+          });
+        },
+        getDataSources: function () {
+          axios.get("/rest/data/datasources").then((response) => {
+            console.log(response.data);
+          });
+        },
+        getEstimatedTime: function () {
+          axios.get("/rest/assignments/estimated-time").then((response) => {
+            this.estimatedTime = response.data.result;
+          });
+        },
+        changeDeveloper: function (item) {
+          this.selectedTaskList = item;
+        },
+      },
+    });
+  </script>
+</html>
