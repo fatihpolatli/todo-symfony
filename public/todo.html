@@ -94,8 +94,8 @@
             console.log(response);
             if (response.data.result == "ok") {
               this.appInit = true;
-              this.fetchAssignments();
-              this.getEstimatedTime();
+              this.assignAllTasks();
+              
             }
           });
         },
@@ -104,6 +104,7 @@
             if (response.data.result == "ok") {
               this.calculationDone = true;
               this.fetchAssignments();
+              this.getEstimatedTime();
             }
           });
         },
