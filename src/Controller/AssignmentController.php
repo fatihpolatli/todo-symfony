@@ -31,8 +31,7 @@ class AssignmentController extends BaseController
      */
     public function getAssignments(SerializerInterface $serializer, SessionInterface $session)
     {
-        //return $this->sendJsonResponse(["result" => "ok"], $serializer);
-
+       
         $service = new AssignmentService($session);
         $result = $service->getAssignments();
 
@@ -45,7 +44,6 @@ class AssignmentController extends BaseController
      */
     public function getEstimatedTime(SerializerInterface $serializer, SessionInterface $session)
     {
-        //return $this->sendJsonResponse(["result" => "ok"], $serializer);
 
         $service = new AssignmentService($session);
         $result = $service->getEstimatedTime();
